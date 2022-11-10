@@ -23,4 +23,4 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_esp_transmissions(self, info, **kwargs):
-        return ESPTransmission.objects.Filter(**kwargs)
+        return ESPTransmission.objects.filter(**kwargs)
