@@ -28,7 +28,15 @@ class Query(graphene.ObjectType):
         return '0.0.1'
 
     esp_transmissions = graphene.List(
-        ESPTransmissionType
+        ESPTransmissionType,
+        ldr_sensor__gte=graphene.Float(),
+        ldr_sensor__lte=graphene.Float(),
+        temperature_sensor__gte=graphene.Float(),
+        temperature_sensor__lte=graphene.Float(),
+        pressure__gte=graphene.Float(),
+        moisture__lte=graphene.Float(),
+        mac_address__in=graphene.List(graphene.String),
+        mac_address__icontains=graphene.String()
     )
 
     def resolve_esp_transmissions(self, info, **kwargs):
