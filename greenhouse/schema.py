@@ -1,3 +1,4 @@
+from datetime import datetime
 import graphene
 from greenhouse.models import ESPTransmission
 
@@ -10,6 +11,14 @@ class ESPTransmissionType(graphene.ObjectType):
     temperature_sensor = graphene.Float()
     pressure = graphene.Float()
     moisture = graphene.Float()
+    datetime_origin = graphene.DateTime()
+    datetime_receive = graphene.DateTime()
+
+    def resolve_datetime_origin(self, info, **kwargs):
+        return datetime.fromtimestamp(self.timestamp_origin)
+
+    def resolve_datetime_receive(self, info, **kwargs):
+        return datetime.fromtimestamp(self.timestamp_receive)
 
 
 class Query(graphene.ObjectType):
