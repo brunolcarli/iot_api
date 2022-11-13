@@ -8,7 +8,15 @@ migrate:
 	python manage.py makemigrations
 	python manage.py migrate
 
+shell:
+	python manage.py shell
+
+mqtt_sub:
+	python manage.py mqtt_sub
+
+target: mqtt_sub run
+
 pipe:
 	make install
 	make migrate
-	make run
+	make -j2 target
