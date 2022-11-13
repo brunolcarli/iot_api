@@ -124,3 +124,10 @@ STATIC_URL = '/static/'
 GRAPHENE = {
     'SCHEMA': 'iot_api.schema.schema',
 }
+
+MQTT_CONFIG = {
+    'MQTT_HOST': os.environ.get('MQTT_HOST'),
+    'MQTT_PORT': int(os.environ.get('MQTT_PORT', 0)),
+    'MQTT_TOPIC': os.environ.get('MQTT_TOPIC'),
+    'MQTT_CLIENT': os.environ.get('MQTT_CLIENT'),
+}
