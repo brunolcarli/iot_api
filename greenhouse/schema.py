@@ -27,12 +27,16 @@ class DeviceType(graphene.ObjectType):
     description = graphene.String()
     transmissions = graphene.List(ESPTransmissionType)
     transmission_count = graphene.Int()
+    is_installed = graphene.Boolean()
 
     def resolve_transmissions(self, info, **kwargs):
         return ESPTransmission.objects.filter(mac_address=self.device_id)
 
     def resolve_transmission_count(self, info, **kwargs):
         return ESPTransmission.objects.filter(mac_address=self.device_id).count()
+
+    def resolve_is_installed(self, info, **kwargs):
+        return bool(self.installation_set.count())
 
 
 class InstallationType(graphene.ObjectType):
@@ -92,3 +96,63 @@ class Query(graphene.ObjectType):
 
     def resolve_installation(self, info, **kwargs):
         return Installation.objects.get(reference=kwargs['reference'])
+
+
+# MUTATIONS
+
+class CreateDevice(graphene.relay.ClientIDMutation):
+    device = graphene.Field(DeviceType)
+
+    class Input:
+        hardware_type = graphene.String(required=True)
+        device_id = graphene.String(requried=True)
+        description = graphene.String()
+
+    def mutate_and_get_payload(self, info, **kwargs):
+        device, created = Device.objects.get_or_create(
+            device_id=kwargs['device_id']
+        )
+        if not created:
+            raise Exception("Device ID already registered")
+
+        device.hardware_type = kwargs['hardware_type']
+        device.description = kwargs.get('description', "")
+        device.save()
+
+        return CreateDevice(device)
+
+
+class CreateInstallation(graphene.relay.ClientIDMutation):
+    installation = graphene.Field(InstallationType)
+
+    class Input:
+        reference = graphene.String(required=True)
+        device_id = graphene.String(required=True)
+        latitude = graphene.Float(required=True)
+        longitude = graphene.Float(required=True)
+        description = graphene.String()
+
+    def mutate_and_get_payload(self, info, **kwargs):
+        try:
+            device = Device.objects.get(device_id=kwargs['device_id'])
+        except Device.DoesNotExist:
+            raise Exception('Device not found')
+
+        if bool(device.installation_set.count()):
+            raise Exception('Device already installed in another installation')
+
+        installation = Installation.objects.create(
+            reference=kwargs['reference'],
+            device=device,
+            latitude=kwargs['latitude'],
+            longitude=kwargs['longitude'],
+            description=kwargs.get('description', '')
+        )
+        installation.save()
+
+        return CreateInstallation(installation)
+
+
+class Mutation:
+    create_device = CreateDevice.Field()
+    create_installation = CreateInstallation.Field()
