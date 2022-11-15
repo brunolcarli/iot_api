@@ -1,5 +1,6 @@
 from datetime import datetime
 import graphene
+import pytz
 from greenhouse.models import ESPTransmission, Device, Installation
 from greenhouse.util import translate_ldr_value
 
@@ -20,10 +21,14 @@ class ESPTransmissionType(graphene.ObjectType):
         return translate_ldr_value(self.ldr_sensor)
 
     def resolve_datetime_origin(self, info, **kwargs):
-        return datetime.fromtimestamp(self.timestamp_origin)
+        return datetime.fromtimestamp(self.timestamp_origin).astimezone(
+            pytz.timezone('America/Sao_Paulo')
+        )
 
     def resolve_datetime_receive(self, info, **kwargs):
-        return datetime.fromtimestamp(self.timestamp_receive)
+        return datetime.fromtimestamp(self.timestamp_receive).astimezone(
+            pytz.timezone('America/Sao_Paulo')
+        )
 
 
 class DeviceType(graphene.ObjectType):
