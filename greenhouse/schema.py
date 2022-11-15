@@ -1,6 +1,7 @@
 from datetime import datetime
 import graphene
 from greenhouse.models import ESPTransmission, Device, Installation
+from greenhouse.util import translate_ldr_value
 
 
 class ESPTransmissionType(graphene.ObjectType):
@@ -13,6 +14,10 @@ class ESPTransmissionType(graphene.ObjectType):
     moisture = graphene.Float()
     datetime_origin = graphene.DateTime()
     datetime_receive = graphene.DateTime()
+    light_level = graphene.String()
+
+    def resolve_light_level(self, info, **kwargs):
+        return translate_ldr_value(self.ldr_sensor)
 
     def resolve_datetime_origin(self, info, **kwargs):
         return datetime.fromtimestamp(self.timestamp_origin)
