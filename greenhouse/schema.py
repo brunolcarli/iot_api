@@ -40,9 +40,19 @@ class DeviceType(graphene.ObjectType):
     is_installed = graphene.Boolean()
 
     def resolve_transmissions(self, info, **kwargs):
+        if 'dt_start' in self.__dict__:
+            return ESPTransmission.objects.filter(
+                mac_address=self.device_id,
+                timestamp_origin__gte=self.__dict__['dt_start'].timestamp()
+            )
         return ESPTransmission.objects.filter(mac_address=self.device_id)
 
     def resolve_transmission_count(self, info, **kwargs):
+        if 'dt_start' in self.__dict__:
+            return ESPTransmission.objects.filter(
+                mac_address=self.device_id,
+                timestamp_origin__gte=self.__dict__['dt_start'].timestamp()
+            ).count()
         return ESPTransmission.objects.filter(mac_address=self.device_id).count()
 
     def resolve_is_installed(self, info, **kwargs):
@@ -101,11 +111,15 @@ class Query(graphene.ObjectType):
 
     installation = graphene.Field(
         InstallationType,
-        reference=graphene.String(required=True)
+        reference=graphene.String(required=True),
+        tx_datetime_start=graphene.DateTime()
     )
 
     def resolve_installation(self, info, **kwargs):
-        return Installation.objects.get(reference=kwargs['reference'])
+        installation = Installation.objects.get(reference=kwargs['reference'])
+        if installation.device and kwargs.get('tx_datetime_start'):
+            installation.device.dt_start = kwargs['tx_datetime_start']
+        return installation
 
 
 # MUTATIONS
