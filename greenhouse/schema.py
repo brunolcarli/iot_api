@@ -3,6 +3,23 @@ import graphene
 import pytz
 from greenhouse.models import ESPTransmission, Device, Installation
 from greenhouse.util import translate_ldr_value
+from greenhouse.statistics import hour_relative_freq
+
+
+class HourRelativeFrequency(graphene.ObjectType):
+    hours = graphene.List(graphene.String)
+    ldr_relative_frequency = graphene.List(graphene.Float)
+    ldr_high_std = graphene.List(graphene.Float)
+    ldr_low_std = graphene.List(graphene.Float)
+    temperature_relative_frequency = graphene.List(graphene.Float)
+    temperature_high_std = graphene.List(graphene.Float)
+    temperature_low_std = graphene.List(graphene.Float)
+    pressure_relative_frequency = graphene.List(graphene.Float)
+    pressure_high_std = graphene.List(graphene.Float)
+    pressure_low_std = graphene.List(graphene.Float)
+    moisture_relative_frequency = graphene.List(graphene.Float)
+    moisture_high_std = graphene.List(graphene.Float)
+    moisture_low_std = graphene.List(graphene.Float)
 
 
 class ESPTransmissionType(graphene.ObjectType):
@@ -38,6 +55,35 @@ class DeviceType(graphene.ObjectType):
     transmissions = graphene.List(ESPTransmissionType)
     transmission_count = graphene.Int()
     is_installed = graphene.Boolean()
+    hour_relative_frequency = graphene.Field(HourRelativeFrequency)
+
+    def resolve_hour_relative_frequency(self, info, **kwargs):
+        if 'dt_start' in self.__dict__:
+            tx = ESPTransmission.objects.filter(
+                mac_address=self.device_id,
+                timestamp_origin__gte=self.__dict__['dt_start'].timestamp()
+            )
+        else:
+            tx = ESPTransmission.objects.filter(mac_address=self.device_id)
+        if not tx:
+            return None
+
+        rel_freq = hour_relative_freq(tx, '3600S')
+        return HourRelativeFrequency(
+            hours=rel_freq.index.values,
+            ldr_relative_frequency=rel_freq.LDR_REL_FREQ.values,
+            ldr_high_std=rel_freq.LDR_POS_STD.values,
+            ldr_low_std=rel_freq.LDR_NEG_STD.values,
+            temperature_relative_frequency=rel_freq.TEMP_REL_FREQ.values,
+            temperature_high_std=rel_freq.TEMP_POS_STD.values,
+            temperature_low_std=rel_freq.TEMP_NEG_STD.values,
+            pressure_relative_frequency=rel_freq.PRES_REL_FREQ.values,
+            pressure_high_std=rel_freq.PRES_POS_STD.values,
+            pressure_low_std=rel_freq.PRES_NEG_STD.values,
+            moisture_relative_frequency=rel_freq.MOIS_REL_FREQ.values,
+            moisture_high_std=rel_freq.MOIS_POS_STD.values,
+            moisture_low_std=rel_freq.MOIS_NEG_STD.values,
+        )
 
     def resolve_transmissions(self, info, **kwargs):
         if 'dt_start' in self.__dict__:
