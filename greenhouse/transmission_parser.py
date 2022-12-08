@@ -38,7 +38,7 @@ def on_message(client, userdata, message):
             moisture=moisture
         )
         tx.save()
-        client.publish('map/icon_update', str(data))
+        client.publish('map/icon_update', str(list(data)))
         print('Published ', data)
 
     except Exception as e:
