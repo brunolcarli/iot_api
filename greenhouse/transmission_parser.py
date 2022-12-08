@@ -38,10 +38,12 @@ def on_message(client, userdata, message):
             moisture=moisture
         )
         tx.save()
+        client.publish('map/icon_update', str(data))
+        print('Published ', data)
 
     except Exception as e:
         print(f'Failed saving transmission with error: {str(e)}')
-
+        
 
 broker_address= CONFIG['MQTT_HOST']
 port = CONFIG['MQTT_PORT']
