@@ -55,7 +55,11 @@ class DeviceType(graphene.ObjectType):
     transmissions = graphene.List(ESPTransmissionType)
     transmission_count = graphene.Int()
     is_installed = graphene.Boolean()
+    last_transmission = graphene.Field(ESPTransmissionType)
     hour_relative_frequency = graphene.Field(HourRelativeFrequency)
+
+    def resolve_last_transmission(self, info, **kwargs):
+        return ESPTransmission.objects.filter(mac_address=self.device_id).last()
 
     def resolve_hour_relative_frequency(self, info, **kwargs):
         if 'dt_start' in self.__dict__:
