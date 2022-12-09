@@ -1,9 +1,21 @@
+import asyncio
 from datetime import datetime
 import graphene
 import pytz
 from greenhouse.models import ESPTransmission, Device, Installation
 from greenhouse.util import translate_ldr_value
 from greenhouse.statistics import hour_relative_freq
+
+
+class Subscription(graphene.ObjectType):
+    foo = graphene.String()
+
+    async def resolve_foo(root, info):
+        while True:
+            yield 'baz'
+            await asyncio.sleep(1)
+            break
+        await 'spam'
 
 
 class HourRelativeFrequency(graphene.ObjectType):

@@ -16,7 +16,17 @@ Including another URLconf
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
+from graphql.backend.core import GraphQLCoreBackend
+
+
+class GraphQLCustomCoreBackend(GraphQLCoreBackend):
+    def __init__(self, executor=None):
+        super().__init__(executor)
+        self.execute_params['allow_subscriptions'] = True
+
 
 urlpatterns = [
-    path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True, backend=GraphQLCustomCoreBackend()))),
+    path('ws/graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True, backend=GraphQLCustomCoreBackend()))),
+    path('subscriptions/', csrf_exempt(GraphQLView.as_view(graphiql=True, backend=GraphQLCustomCoreBackend()))),
 ]
