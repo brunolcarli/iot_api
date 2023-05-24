@@ -24,7 +24,7 @@ class HourRelativeFrequency(graphene.ObjectType):
     moisture_low_std = graphene.List(graphene.Float)
 
 class SensorHCSR04Type(graphene.ObjectType):
-    mac = graphene.Int()
+    mac = graphene.String()
     timestamp_origin = graphene.Int()
     timestamp_receive = graphene.Int()
     distance = graphene.Float()

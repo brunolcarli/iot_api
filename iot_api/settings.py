@@ -148,3 +148,6 @@ MQTT_CONFIG = {
     'MQTT_TOPIC': os.environ.get('MQTT_TOPIC'),
     'MQTT_CLIENT': os.environ.get('MQTT_CLIENT'),
 }
+
+HCSR_DEVICE = os.environ.get('HCSR_DEVICE')
+LDR_DEVICE = os.environ.get('LDR_DEVICE')
