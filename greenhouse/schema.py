@@ -21,6 +21,23 @@ class HourRelativeFrequency(graphene.ObjectType):
     moisture_high_std = graphene.List(graphene.Float)
     moisture_low_std = graphene.List(graphene.Float)
 
+class SensorHCSR04(graphene.ObjectType):
+    mac = graphene.Int()
+    timestamp_origin = graphene.Int()
+    timestamp_receive = graphene.Int()
+    distance = graphene.Float()
+    datetime_origin = graphene.DateTime()
+    datetime_receive = graphene.DateTime()
+
+    def resolve_datetime_origin(self, info, **kwargs):
+        return datetime.fromtimestamp(self.timestamp_origin).astimezone(
+            pytz.timezone('America/Sao_Paulo')
+        )
+
+    def resolve_datetime_receive(self, info, **kwargs):
+        return datetime.fromtimestamp(self.timestamp_receive).astimezone(
+            pytz.timezone('America/Sao_Paulo')
+        )
 
 class ESPTransmissionType(graphene.ObjectType):
     timestamp_origin = graphene.Int()
@@ -122,6 +139,15 @@ class Query(graphene.ObjectType):
 
     def resolve_version(self, info, **kwargs):
         return '0.0.7'
+    
+    hcsr04_readings = graphene.List(SensorHCSR04)
+
+    def resolve_hcsr04_readings(self, info, **kwargs):
+        fake_data = {"mac": 123,
+    "timestamp_origin": 123,
+    "timestamp_receive":123,
+    "distance":1.0}
+        return [fake_data]
 
     esp_transmissions = graphene.List(
         ESPTransmissionType,
