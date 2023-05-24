@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import uuid
+# import django
+# from django.utils.encoding import force_str
+# django.utils.encoding.force_text = force_str
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = str(uuid.uuid4())
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -85,7 +89,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'iot_api.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
@@ -145,3 +148,6 @@ MQTT_CONFIG = {
     'MQTT_TOPIC': os.environ.get('MQTT_TOPIC'),
     'MQTT_CLIENT': os.environ.get('MQTT_CLIENT'),
 }
+
+HCSR_DEVICE = os.environ.get('HCSR_DEVICE')
+LDR_DEVICE = os.environ.get('LDR_DEVICE')

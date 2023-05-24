@@ -1,9 +1,11 @@
+import asyncio
 from datetime import datetime
 import graphene
 import pytz
-from greenhouse.models import ESPTransmission, Device, Installation
+from greenhouse.models import ESPTransmission, Device, Installation, SensorHCSR04
 from greenhouse.util import translate_ldr_value
 from greenhouse.statistics import hour_relative_freq
+
 
 
 class HourRelativeFrequency(graphene.ObjectType):
@@ -21,6 +23,23 @@ class HourRelativeFrequency(graphene.ObjectType):
     moisture_high_std = graphene.List(graphene.Float)
     moisture_low_std = graphene.List(graphene.Float)
 
+class SensorHCSR04Type(graphene.ObjectType):
+    mac = graphene.String()
+    timestamp_origin = graphene.Int()
+    timestamp_receive = graphene.Int()
+    distance = graphene.Float()
+    datetime_origin = graphene.DateTime()
+    datetime_receive = graphene.DateTime()
+
+    def resolve_datetime_origin(self, info, **kwargs):
+        return datetime.fromtimestamp(self.timestamp_origin).astimezone(
+            pytz.timezone('America/Sao_Paulo')
+        )
+
+    def resolve_datetime_receive(self, info, **kwargs):
+        return datetime.fromtimestamp(self.timestamp_receive).astimezone(
+            pytz.timezone('America/Sao_Paulo')
+        )
 
 class ESPTransmissionType(graphene.ObjectType):
     timestamp_origin = graphene.Int()
@@ -121,7 +140,12 @@ class Query(graphene.ObjectType):
     version = graphene.String()
 
     def resolve_version(self, info, **kwargs):
-        return '0.0.7'
+        return '0.0.8'
+    
+    hcsr04_readings = graphene.List(SensorHCSR04Type)
+
+    def resolve_hcsr04_readings(self, info, **kwargs):
+        return SensorHCSR04.objects.filter(**kwargs)
 
     esp_transmissions = graphene.List(
         ESPTransmissionType,

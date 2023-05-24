@@ -23,3 +23,10 @@ class Installation(models.Model):
     latitude = models.FloatField(null=False)
     longitude = models.FloatField(null=False)
     description = models.TextField()
+
+
+class SensorHCSR04(models.Model):
+    mac = models.IntegerField(null=False)
+    timestamp_origin = models.IntegerField(null=False)
+    timestamp_receive = models.IntegerField(null=False)
+    distance = models.FloatField(null=False)
