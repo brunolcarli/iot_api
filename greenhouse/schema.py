@@ -7,16 +7,6 @@ from greenhouse.util import translate_ldr_value
 from greenhouse.statistics import hour_relative_freq
 
 
-class Subscription(graphene.ObjectType):
-    foo = graphene.String()
-
-    async def resolve_foo(root, info):
-        while True:
-            yield 'baz'
-            await asyncio.sleep(1)
-            break
-        await 'spam'
-
 
 class HourRelativeFrequency(graphene.ObjectType):
     hours = graphene.List(graphene.String)
@@ -33,7 +23,7 @@ class HourRelativeFrequency(graphene.ObjectType):
     moisture_high_std = graphene.List(graphene.Float)
     moisture_low_std = graphene.List(graphene.Float)
 
-class SensorHCSR04(graphene.ObjectType):
+class SensorHCSR04Type(graphene.ObjectType):
     mac = graphene.Int()
     timestamp_origin = graphene.Int()
     timestamp_receive = graphene.Int()
@@ -152,7 +142,7 @@ class Query(graphene.ObjectType):
     def resolve_version(self, info, **kwargs):
         return '0.0.7'
     
-    hcsr04_readings = graphene.List(SensorHCSR04)
+    hcsr04_readings = graphene.List(SensorHCSR04Type)
 
     def resolve_hcsr04_readings(self, info, **kwargs):
         fake_data = {"mac": 123,

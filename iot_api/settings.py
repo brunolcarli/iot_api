@@ -11,10 +11,10 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-
-import django
-from django.utils.encoding import force_str
-django.utils.encoding.force_text = force_str
+import uuid
+# import django
+# from django.utils.encoding import force_str
+# django.utils.encoding.force_text = force_str
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = str(uuid.uuid4())
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -35,9 +35,6 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    # "daphne",
-    "channels",
-    "graphql_ws.django",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -92,8 +89,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'iot_api.wsgi.application'
 
-ASGI_APPLICATION = "iot_api.asgi.application"
-
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
@@ -145,7 +140,6 @@ STATIC_URL = '/static/'
 
 GRAPHENE = {
     'SCHEMA': 'iot_api.schema.schema',
-    'SUBSCRIPTION_PATH': '/ws/graphql'
 }
 
 MQTT_CONFIG = {
