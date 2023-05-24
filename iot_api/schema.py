@@ -12,5 +12,4 @@ class Mutation(greenhouse.schema.Mutation, graphene.ObjectType):
 schema = graphene.Schema(
     query=Query,
     mutation=Mutation,
-    subscription=greenhouse.schema.Subscription
 )

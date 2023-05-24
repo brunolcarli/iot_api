@@ -2,7 +2,7 @@ import asyncio
 from datetime import datetime
 import graphene
 import pytz
-from greenhouse.models import ESPTransmission, Device, Installation
+from greenhouse.models import ESPTransmission, Device, Installation, SensorHCSR04
 from greenhouse.util import translate_ldr_value
 from greenhouse.statistics import hour_relative_freq
 
@@ -145,11 +145,7 @@ class Query(graphene.ObjectType):
     hcsr04_readings = graphene.List(SensorHCSR04Type)
 
     def resolve_hcsr04_readings(self, info, **kwargs):
-        fake_data = {"mac": 123,
-    "timestamp_origin": 123,
-    "timestamp_receive":123,
-    "distance":1.0}
-        return [fake_data]
+        return SensorHCSR04.objects.filter(**kwargs)
 
     esp_transmissions = graphene.List(
         ESPTransmissionType,
