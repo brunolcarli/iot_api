@@ -22,6 +22,8 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, message):
     message_origin = message.topic
+    print('********')
+    print(message_origin)
     message = str(message.payload.decode("utf-8"))
     print("message received " , message)
     data = literal_eval(message)
