@@ -161,7 +161,7 @@ class Query(graphene.ObjectType):
     version = graphene.String()
 
     def resolve_version(self, info, **kwargs):
-        return '0.0.8'
+        return '0.0.9'
     
     hcsr04_readings = graphene.List(SensorHCSR04Type)
 
